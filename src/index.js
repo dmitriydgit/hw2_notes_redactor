@@ -19,6 +19,8 @@ class Note extends React.Component {
 	}
 };
 
+
+
 class NoteEditor extends React.Component {
 	constructor(props) {
 		super(props)
@@ -69,8 +71,8 @@ class NoteEditor extends React.Component {
 	}
 };
 
-class NotesGrid extends React.Component {
 
+class NotesGrid extends React.Component {
 	componentDidMount() {
 		var grid = this.refs.grid;
 		this.msnry = new Masonry(grid, {
@@ -87,8 +89,6 @@ class NotesGrid extends React.Component {
 			this.msnry.layout();
 		}
 	};
-
-
 
 	render() {
 		var onNoteDelete = this.props.onNoteDelete;
@@ -112,6 +112,7 @@ class NotesGrid extends React.Component {
 	}
 };
 
+
 class NoteSearch extends React.Component {
 	constructor(props) {
 		super(props);
@@ -120,17 +121,10 @@ class NoteSearch extends React.Component {
 
 	handleSearchQuery(event) {
 		var searchQuery = event.target.value.toLowerCase();
-		console.log(searchQuery)
-
-		// if (event.keyCode !== 13) {
-		// 	return
-		// }
-
 		if (event.target.value.length === 0 || event.keyCode === 13) {
 			this.props.onNoteSearch(searchQuery);
+			//event.target.value = null;
 		}
-
-		//this.props.onNoteSearch(searchQuery);
 	}
 
 	render() {
@@ -141,11 +135,11 @@ class NoteSearch extends React.Component {
 					className="search-field"
 					placeholder='Search...'
 					onKeyUp={this.handleSearchQuery} />
-
 			</div>
 		)
 	}
 }
+
 
 class NotesApp extends React.Component {
 	constructor(props) {
@@ -168,13 +162,7 @@ class NotesApp extends React.Component {
 
 	componentDidUpdate(prevProps, prevState) {
 		this._updateLocalStorage();
-
-		// only update chart if the data has changed
-		// if (prevState.notes !== this.state.notes) {
-
-		// }
 	};
-
 
 	handleNoteAdd(newNote) {
 		var newNotes = this.state.notes.slice();
@@ -207,8 +195,6 @@ class NotesApp extends React.Component {
 		}
 	}
 
-
-
 	render() {
 		return (
 			<div className="notes-app">
@@ -233,17 +219,4 @@ ReactDOM.render(
 
 
 
-
-
-
-
-
-
-
-
-//ReactDOM.render(<App />, document.getElementById('root'));
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
