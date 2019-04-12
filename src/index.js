@@ -119,17 +119,30 @@ class NoteSearch extends React.Component {
 	}
 
 	handleSearchQuery(event) {
-		if (event.keyCode !== 13) {
-			return
-		}
 		var searchQuery = event.target.value.toLowerCase();
 		console.log(searchQuery)
-		this.props.onNoteSearch(searchQuery);
+
+		// if (event.keyCode !== 13) {
+		// 	return
+		// }
+
+		if (event.target.value.length === 0 || event.keyCode === 13) {
+			this.props.onNoteSearch(searchQuery);
+		}
+
+		//this.props.onNoteSearch(searchQuery);
 	}
 
 	render() {
 		return (
-			<input type='text' className="search-field" onKeyUp={this.handleSearchQuery} />
+			<div>
+				<input
+					type='text'
+					className="search-field"
+					placeholder='Search...'
+					onKeyUp={this.handleSearchQuery} />
+
+			</div>
 		)
 	}
 }
@@ -162,17 +175,23 @@ class NotesApp extends React.Component {
 		// }
 	};
 
+
+	handleNoteAdd(newNote) {
+		var newNotes = this.state.notes.slice();
+		newNotes.unshift(newNote);
+		this.setState(
+			{
+				notes: newNotes,
+				filteredNotes: ''
+			}
+		);
+	};
+
 	handleNoteDelete(note) {
 		var noteId = note.id;
 		var newNotes = this.state.notes.filter(function (note) {
 			return note.id !== noteId;
 		});
-		this.setState({ notes: newNotes });
-	};
-
-	handleNoteAdd(newNote) {
-		var newNotes = this.state.notes.slice();
-		newNotes.unshift(newNote);
 		this.setState({ notes: newNotes });
 	};
 
@@ -186,7 +205,6 @@ class NotesApp extends React.Component {
 		} else {
 			this.setState({ filteredNotes: '' })
 		}
-		//this.setState({ filteredNotes: filteredNotes });
 	}
 
 
