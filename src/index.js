@@ -114,18 +114,6 @@ class NotesGrid extends React.Component {
 
 
 class NoteSearch extends React.Component {
-	constructor(props) {
-		super(props);
-		this.handleSearchQuery = this.handleSearchQuery.bind(this);
-	}
-
-	handleSearchQuery(event) {
-		var searchQuery = event.target.value.toLowerCase();
-		if (event.target.value.length === 0 || event.keyCode === 13) {
-			this.props.onNoteSearch(searchQuery);
-			//event.target.value = null;
-		}
-	}
 
 	render() {
 		return (
@@ -134,7 +122,8 @@ class NoteSearch extends React.Component {
 					type='text'
 					className="search-field"
 					placeholder='Search...'
-					onKeyUp={this.handleSearchQuery} />
+					onKeyUp={this.props.onSearch}
+				/>
 			</div>
 		)
 	}
@@ -146,17 +135,20 @@ class NotesApp extends React.Component {
 		super(props);
 		this.state = {
 			notes: [],
-			filteredNotes: []
+			notesBackup: []
 		};
 		this.handleNoteDelete = this.handleNoteDelete.bind(this)
 		this.handleNoteAdd = this.handleNoteAdd.bind(this)
-		this.handleSearchNote = this.handleSearchNote.bind(this)
+		this.handleSearch = this.handleSearch.bind(this)
 	}
 
 	componentDidMount() {
 		var localNotes = JSON.parse(localStorage.getItem('notes'));
 		if (localNotes) {
-			this.setState({ notes: localNotes });
+			this.setState({
+				notes: localNotes,
+				notesBackup: localNotes
+			});
 		}
 	};
 
@@ -170,9 +162,10 @@ class NotesApp extends React.Component {
 		this.setState(
 			{
 				notes: newNotes,
-				filteredNotes: ''
+				notesBackup: newNotes
 			}
 		);
+		this._updateLocalStorage();
 	};
 
 	handleNoteDelete(note) {
@@ -180,18 +173,28 @@ class NotesApp extends React.Component {
 		var newNotes = this.state.notes.filter(function (note) {
 			return note.id !== noteId;
 		});
-		this.setState({ notes: newNotes });
+		this.setState({
+			notes: newNotes,
+			notesBackup: newNotes
+		});
+		this._updateLocalStorage();
 	};
 
-	handleSearchNote(searchQuery) {
-		if (searchQuery) {
-			var filteredNotes = this.state.notes.filter(function (el) {
-				var searchValue = el.text.toLowerCase();
-				return searchValue.indexOf(searchQuery) !== -1;
+	handleSearch(e) {
+		var searchQuery = e.target.value;
+
+		if (e.keyCode === 13) {
+			var searchedNotes = this.state.notes.filter(function (note) {
+				return note.text.toLowerCase().indexOf(searchQuery) !== -1;
 			})
-			this.setState({ filteredNotes: filteredNotes })
-		} else {
-			this.setState({ filteredNotes: '' })
+			this.setState({
+				notes: searchedNotes,
+			})
+		}
+		if (searchQuery.length === 0) {
+			this.setState({
+				notes: this.state.notesBackup,
+			})
 		}
 	}
 
@@ -199,9 +202,9 @@ class NotesApp extends React.Component {
 		return (
 			<div className="notes-app">
 				<h2 className="app-header">NotesApp</h2>
-				<NoteSearch onNoteSearch={this.handleSearchNote} />
+				<NoteSearch onSearch={this.handleSearch} />
 				<NoteEditor onNoteAdd={this.handleNoteAdd} />
-				<NotesGrid notes={this.state.filteredNotes.length > 0 ? this.state.filteredNotes : this.state.notes} onNoteDelete={this.handleNoteDelete} />
+				<NotesGrid notes={this.state.notes} onNoteDelete={this.handleNoteDelete} />
 			</div>
 		);
 	};
